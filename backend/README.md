@@ -35,6 +35,10 @@ With Postgres running, restore a database using the trivia.psql file provided. F
 ```bash
 psql trivia < trivia.psql
 ```
+IMPORTANT: If the above command does not work, create a database in PSQL named 'trivia' and run the following:
+'''
+psql -U username -d database_name -f trivia.psql
+'''
 
 ## Running the server
 
