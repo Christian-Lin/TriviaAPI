@@ -3,6 +3,7 @@ __pycache__
 venv
 .env
 env
+frontend/node_modules/
 
 # OS generated files #
 ######################
