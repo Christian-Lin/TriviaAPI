@@ -120,7 +120,7 @@ def create_app(test_config=None):
   def add_question():
     body = request.get_json()
     # If all required sections are not in the request response, send a 422 unable to process
-    if not ('question' in body and 'answer' in body and 'difficulty' in body and 'category' in body):
+    if (body.get('question').strip() == "") or (body.get('answer').strip() == ""):
       abort(422)
 
     # Add new question with required info
@@ -138,6 +138,7 @@ def create_app(test_config=None):
         'success': True,
         'created': question.id,
       })
+
     # Abort if there is a problem creating new question - unable to process request
     except:
       abort(422)
