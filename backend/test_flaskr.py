@@ -15,7 +15,8 @@ class TriviaTestCase(unittest.TestCase):
         self.app = create_app()
         self.client = self.app.test_client
         self.database_name = "trivia_test"
-        self.database_path = "postgres://{}/{}".format('chris:admin@localhost:5432', self.database_name)
+        self.database_path = "postgres://{}/{}".format(
+            'chris:admin@localhost:5432', self.database_name)
         setup_db(self.app, self.database_path)
 
         # binds the app to the current context
@@ -24,15 +25,10 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
-
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
 
     # Test getting category endpoints and checks responses
     def test_get_categories(self):
@@ -41,7 +37,9 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(len(data['categories']), 6) # In this case, we only have 6 categories. In case that more categories are added, this has to be changed.
+        # In this case, we only have 6 categories. In case that more categories
+        # are added, this has to be changed.
+        self.assertEqual(len(data['categories']), 6)
 
     # Test paginated questions
     def test_get_pagination(self):
@@ -67,11 +65,11 @@ class TriviaTestCase(unittest.TestCase):
     def test_delete_question(self):
         # Create new question
         question = Question(
-            question='delete question', 
-            answer='delete answer', 
-            category=1, 
+            question='delete question',
+            answer='delete answer',
+            category=1,
             difficulty=1
-            )
+        )
         question.insert()
         question_id = question.id
 
@@ -79,7 +77,8 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().delete(f'/questions/{question_id}')
         data = json.loads(res.data)
 
-        question = Question.query.filter(Question.id == question.id).one_or_none()
+        question = Question.query.filter(
+            Question.id == question.id).one_or_none()
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -111,7 +110,9 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertEqual(modified_questions, original_questions + 1) # Assert that only one question was added, test +1 from original questions
+        # Assert that only one question was added, test +1 from original
+        # questions
+        self.assertEqual(modified_questions, original_questions + 1)
 
     # Test posting without an answer - should send a 422 (Unprocessable)
     def test_new_question_empty_answer(self):
@@ -134,9 +135,11 @@ class TriviaTestCase(unittest.TestCase):
         data = json.loads(res.data)
 
         self.assertEqual(data['success'], True)
-        self.assertEqual(data['total_questions'], 4) # Should return 4 questions for category 2 (Art) - as per original db
+        # Should return 4 questions for category 2 (Art) - as per original db
+        self.assertEqual(data['total_questions'], 4)
 
-    # Test error 404 (not found) for getting a question for a non-existent category
+    # Test error 404 (not found) for getting a question for a non-existent
+    # category
     def test_get_questions_from_category_404(self):
         res = self.client().get('/categories/1000/questions')
         data = json.loads(res.data)
@@ -179,7 +182,7 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().post('/quizzes', json=new_quiz)
         data = json.loads(res.data)
 
-        self.assertEqual(data['error'], 422)    
+        self.assertEqual(data['error'], 422)
         self.assertEqual(data['success'], False)
         self.assertEqual(data['message'], "Unprocessable")
 
