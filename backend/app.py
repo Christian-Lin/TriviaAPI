@@ -210,13 +210,13 @@ def create_app(test_config=None):
 
     try:
       category = body.get('quiz_category')
+      # If category is non-existent (i.e, clicked on "ALL"), then query all questions, else filter by category
+      if category['type'] == 'click':
+        questions = Question.query.all()
+      else:
+        questions = Question.query.filter_by(category=str(category['id'])).all()
     except: # Category must exist, otherwise send a 422 unable to process
       abort(422)
-    # If category is non-existent (i.e, clicked on "ALL"), then query all questions, else filter by category
-    if category['type'] == 'click':
-      questions = Question.query.all()
-    else:
-      questions = Question.query.filter_by(category=str(category['id'])).all()
     
     questions = [question.format() for question in questions]
 
