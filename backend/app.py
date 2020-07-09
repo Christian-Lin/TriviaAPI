@@ -209,25 +209,23 @@ def create_app(test_config=None):
     body = request.get_json()
 
     try:
-      category = body['quiz_category']['id']
+      category = body.get('quiz_category')
     except: # Category must exist, otherwise send a 422 unable to process
       abort(422)
-    # If category includes everything (0), then get questions from all categories, else get questions for just a single one
-    if category == 0:
+    # If category is non-existent (i.e, clicked on "ALL"), then query all questions, else filter by category
+    if category['type'] == 'click':
       questions = Question.query.all()
     else:
-      questions = Question.query.filter(Question.category == str(category_id)).all()
+      questions = Question.query.filter_by(category=str(category['id'])).all()
     
     questions = [question.format() for question in questions]
 
     try:
-      previous_question = data['previous_questions']
+      previous_question = body.get('previous_questions')
     except:
-      # If previous question does not exist, send a 400 bad request
-      abort(400)
-    # Filter a new list of questions to exclude previous ones
-    new_questions = []
-    for question in new_questions:
+      abort(400) # If previous question does not exist, send a 400 bad request
+    new_questions = [] # Filter a new list of questions to exclude previous ones
+    for question in questions:
       if question['id'] not in previous_question:
         new_questions.append(question)
     # End quiz if all questions are answered, else return a random question from the new list
@@ -235,10 +233,10 @@ def create_app(test_config=None):
       return jsonify({
         'success': True
       })
-    new_question = random.choice(new_questions)
+    question = random.choice(new_questions)
     return jsonify({
       'success': True,
-      'question': new_question
+      'question': question
     })
 
   '''
