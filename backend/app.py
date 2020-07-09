@@ -157,7 +157,7 @@ def create_app(test_config=None):
   def search_questions():
     body = request.get_json()
     search_term = body.get('searchTerm', None)
-    # Filter search by insensitive to case (ilike)
+    # Filter search by case insensitive (ilike)
     if search_term:
       search_results = Question.query.filter(Question.question.ilike(f'%{search_term}%')).all()
 
@@ -167,8 +167,7 @@ def create_app(test_config=None):
         'total_questions': len(search_results),
         'current_category': None
       })
-    else:
-      abort(404)
+    abort(404)
   '''
   @TODO(DONE): 
   Create a GET endpoint to get questions based on category. 
