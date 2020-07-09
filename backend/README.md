@@ -35,10 +35,12 @@ With Postgres running, restore a database using the trivia.psql file provided. F
 ```bash
 psql trivia < trivia.psql
 ```
+
 IMPORTANT: If the above command does not work, create a database in PSQL named 'trivia' and run the following:
-'''
+
+```bash
 psql -U username -d database_name -f trivia.psql
-'''
+```
 
 ## Running the server
 
@@ -47,28 +49,22 @@ From within the `backend` directory first ensure you are working using your crea
 To run the server, execute:
 
 ```bash
-export FLASK_APP=flaskr
+export FLASK_APP=app.py
 export FLASK_ENV=development
+flask run
+```
+
+If using Windows:
+
+```bash
+set FLASK_APP=app.py
+set FLASK_ENV=development
 flask run
 ```
 
 Setting the `FLASK_ENV` variable to `development` will detect file changes and restart the server automatically.
 
-Setting the `FLASK_APP` variable to `flaskr` directs flask to use the `flaskr` directory and the `app.py` file to find the application. 
-
-## Tasks
-
-One note before you delve into your tasks: for each endpoint you are expected to define the endpoint and response data. The frontend will be a plentiful resource because it is set up to expect certain endpoints and response data formats already. You should feel free to specify endpoints in your own way; if you do so, make sure to update the frontend or you will get some unexpected behavior. 
-
-1. Use Flask-CORS to enable cross-domain requests and set response headers. 
-2. Create an endpoint to handle GET requests for questions, including pagination (every 10 questions). This endpoint should return a list of questions, number of total questions, current category, categories. 
-3. Create an endpoint to handle GET requests for all available categories. 
-4. Create an endpoint to DELETE question using a question ID. 
-5. Create an endpoint to POST a new question, which will require the question and answer text, category, and difficulty score. 
-6. Create a POST endpoint to get questions based on category. 
-7. Create a POST endpoint to get questions based on a search term. It should return any questions for whom the search term is a substring of the question. 
-8. Create a POST endpoint to get questions to play the quiz. This endpoint should take category and previous question parameters and return a random questions within the given category, if provided, and that is not one of the previous questions. 
-9. Create error handlers for all expected errors including 400, 404, 422 and 500. 
+Setting the `FLASK_APP` variable to `app.py` directs flask to use the `app.py` file to find the application. 
 
 # API Documentation
 
@@ -87,7 +83,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 - Fetches a dictionary of categories in which the keys are the ids and the value is the corresponding string of the category
 - Request Arguments: None
 - Returns: An object with a single key, categories, that contains a object of id: category_string key:value pairs. 
-```
+```bash
 {
     'categories': {
         '1' : "Science",
@@ -105,7 +101,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 - Fetches a list (paginated - limit of 10 per page) of questions, including all categories
 - Request parameters: page:int
 - Returns: a list of questions of every category, success status, and total number of questions in the trivia database
-```
+```bash
   "categories": {
     "1": "Science",
     "2": "Art",
@@ -148,7 +144,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 - Fetches all the questions that belong to a specific category (based on category id)
 - Request argument: category_id:int
 - Returns a category id, a list of questions in that category, a success status, and the total number of questions in that list
-```
+```bash
   "current_category": 5,
   "questions": [
     {
@@ -181,7 +177,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ### DELETE example - `/questions/<question_id>` (i.e. `curl -X DELETE http://localhost:5000/questions/2`)
 - Deletes an existing question from the trivia database, based on its id (in the example shown, question "2" is deleted)
 - Request arguments: question_id:int
-```
+```bash
 {
     'deleted': 2,
     'success': true
@@ -193,7 +189,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 #### POST `/questions` (i.e. `curl -X POST http://localhost:5000/questions -H "Content-Type: application/json" -d '{"question": "What is the capital of Argentina?", "answer": "Buenos Aires", "category": "3", "difficulty": 1}'`)
 - Adds a new question to the trivia database
 - Request arguments: requests a body via 'application/json' type, which includes {question:string, answer:string, difficulty:int, category:string}
-```
+```bash
 {
   "created": 40, 
   "success": true
@@ -203,7 +199,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 #### POST `/questions/search` (i.e. `curl -X POST http://localhost:5000/questions/search -H "Content-Type: application/json" -d '{"searchTerm": "boxer"}'`)
 - Fetches questions via 'application/json' type, where a substring matches with the search term (case insensitive)
 - Returns a list of questions that match the search term, the number of total matches found, and a success status
-```
+```bash
   "questions": [
     {
       "answer": "Muhammad Ali",
@@ -221,7 +217,7 @@ One note before you delve into your tasks: for each endpoint you are expected to
 #### POST '/quizzes' (i.e. `curl -X POST http://localhost:5000/quizzes -H "Content-Type: application/json" -d '{"previous_questions": [], "quiz_category": {"id": 4, "type": "History"}}'`)
 - Fetches a random question via the 'application/json' type, matching the category id and type specified in the data
 - Returns a single random question, based on the questions that have been previously answered (and omits them), along with a success status
-```
+```bash
   "question": {
     "answer": "George Washington Carver",
     "category": 4,
@@ -234,10 +230,32 @@ One note before you delve into your tasks: for each endpoint you are expected to
 ```
 
 ## Testing
-To run the tests, run
+First time setup:
+
+```bash
+createdb -U <username> trivia_test
+psql -U <username> trivia_test < trivia.psql
 ```
+
+or (while on the backend directory containing the file 'trivia.psql')
+
+```bash
+createdb -U <username> trivia_test
+psql -U <username> -d trivia_test -f trivia.psql
+```
+
+IMPORTANT: default user for PSQL is 'postgres'. If the user name is different (as it was my case), the user name will need to be replaced. All instances of user in 'trivia.psql' will need to be updated. In my current run, trivia.psql includes 'chris' as the main default user - please change this to your own.
+
+To run the tests, run (while on the backend folder containing 'test_flaskr.py' file):
+
+```bash
+python test_flaskr.py
+```
+
+To restart the database:
+
+```bash
 dropdb trivia_test
 createdb trivia_test
-psql trivia_test < trivia.psql
-python test_flaskr.py
+psql -U <username> trivia_test < trivia.psql
 ```
