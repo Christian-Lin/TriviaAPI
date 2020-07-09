@@ -171,7 +171,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data['success'], True)
 
     # Test error 422 (Unprocessable) for the quiz, on non-existent cat id
-    def test_play_quiz_400(self):
+    def test_play_quiz_422(self):
         new_quiz = {
             'previous_questions': [0],
             'quiz_category': {"type": "Geography"}

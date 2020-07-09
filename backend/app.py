@@ -164,8 +164,7 @@ def create_app(test_config=None):
       return jsonify({
         'success': True,
         'questions': [question.format() for question in search_results], # Show all questions based on result
-        'total_questions': len(search_results),
-        'current_category': None
+        'total_questions': len(search_results)
       })
     abort(404)
   '''
@@ -210,7 +209,7 @@ def create_app(test_config=None):
 
     try:
       category = body.get('quiz_category')
-      # If category is non-existent (i.e, clicked on "ALL"), then query all questions, else filter by category
+      # If category is "ALL" query all questions, else filter by category
       if category['type'] == 'click':
         questions = Question.query.all()
       else:
@@ -222,22 +221,22 @@ def create_app(test_config=None):
 
     try:
       previous_question = body.get('previous_questions')
-    except:
-      abort(400) # If previous question does not exist, send a 400 bad request
-    new_questions = [] # Filter a new list of questions to exclude previous ones
-    for question in questions:
-      if question['id'] not in previous_question:
-        new_questions.append(question)
-    # End quiz if all questions are answered, else return a random question from the new list
-    if len(new_questions) == 0:
+      new_questions = [] # Filter a new list of questions to exclude previous ones
+      for question in questions:
+        if question['id'] not in previous_question:
+          new_questions.append(question)
+      # End quiz if all questions are answered, else return a random question from the new list
+      if len(new_questions) == 0:
+        return jsonify({
+          'success': True
+        })
+      question = random.choice(new_questions)
       return jsonify({
-        'success': True
+        'success': True,
+        'question': question
       })
-    question = random.choice(new_questions)
-    return jsonify({
-      'success': True,
-      'question': question
-    })
+    except:
+      abort(400)
 
   '''
   @TODO(DONE): 
